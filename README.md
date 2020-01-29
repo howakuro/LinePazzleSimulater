@@ -36,9 +36,12 @@ python main.py
     - 3.7 
         - version 3.7.4.final.0
     - 3.6 
+        - version 3.6.6.final.0
         - version 3.6.5.final.0
 - numpy 
     - version 1.17.4
     - version 1.18.1
+    - version 1.14.5
 - gym
     - version 0.15.4
+    - version 0.14.0
