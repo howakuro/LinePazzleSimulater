@@ -38,7 +38,7 @@ python main.py
     - 3.6 
         - version 3.6.5.final.0
 - numpy 
-    - version 1.17.4 動作確認済み
-    - version 1.18.1 動作確認済み
-- gym  
-    - version 0.15.4 動作確認済み
+    - version 1.17.4
+    - version 1.18.1
+- gym
+    - version 0.15.4
