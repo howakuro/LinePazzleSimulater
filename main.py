@@ -30,8 +30,11 @@ class Game_Record():
 				self.data = pickle.load(f)
 
 	def get_max_record(self):
-		max_score, max_tile = np.max(self.data, axis=0)
-		return maxscore, maxtile
+		if len(self.data) == 0:
+			return 0, 0
+		else:
+			max_score, max_tile = np.max(self.data, axis=0)
+			return max_score, max_tile
 
 	def get_play_count(self):
 		return len(self.data)
@@ -57,6 +60,7 @@ def game_over_check(label_list):
 
 def update_label(env, label_list, done, dat_file):
 	field = env.get_board_GUI().flatten()
+	max_score, _ = dat_file.get_max_record()
 	for i in range(field.size):
 		label_list[i]['text']  = str("" if field[i]==0 else field[i])
 		label_list[i]['bg']    = bg_color[field[i]%10]
@@ -66,6 +70,7 @@ def update_label(env, label_list, done, dat_file):
 	label_list[field.size+1]['text'] = str(env.total_score)
 	label_list[field.size+2]['text'] = "GAME OVER" if done else ""
 	label_list[field.size+3]['text'] = str(dat_file.get_play_count())
+	label_list[field.size+4]['text'] = str(max_score)
 
 def btn_action(env, label_list, i, dat_file):
 	if not game_over_check(label_list): 
@@ -88,8 +93,9 @@ if __name__ == '__main__':
 	# tkinter 設定
 	root = Tk()
 	root.title("Touhou Line Puzzle Simulator")
-	root.geometry("480x450")
-	root.minsize(480, 450)
+	root.geometry("480x470")
+	root.minsize(480, 480)
+	root.maxsize(480, 480)
 	
 	tilefont  = font.Font(size=30)
 	btnfont   = font.Font(size=15)
@@ -119,6 +125,10 @@ if __name__ == '__main__':
 		record_frame
 	)
 	
+	high_score_frame = ttk.Frame(
+		record_frame
+	)
+
 	# 疑似環境呼び出し
 	env = pz.Touhou_Line_Pazzle()
 	field = env.get_board_GUI().flatten()
@@ -156,6 +166,14 @@ if __name__ == '__main__':
 	lab = Label(play_count_frame, text=str(play_count), font=scorefont)
 	lab.pack(side="top")
 	label_list.append(lab)
+
+	# ハイスコア用ラベル記述
+	high_score, _ = dat_file.get_max_record()
+	lab = Label(high_score_frame, text="HIGH SCORE", font=scorefont)
+	lab.pack(side="top")
+	lab = Label(high_score_frame, text=str(high_score), font=scorefont)
+	lab.pack(side="top")
+	label_list.append(lab)
 	
 	# リセットボタン記述
 	cmd = partial(btn_reset, env, label_list, dat_file)
@@ -168,15 +186,16 @@ if __name__ == '__main__':
 		btn.grid(row=env.height+3, column=i, sticky=W+E)
 	
 	# record_frame
-	score_frame.pack()
-	play_count_frame.pack()
+	score_frame.pack(pady=5)
+	play_count_frame.pack(pady=5)
+	high_score_frame.pack(pady=5)
 	
 	# footer_frame
-	gameover_lab.pack()
-	reset_btn.pack()
+	gameover_lab.pack(pady=5)
+	reset_btn.pack(pady=5)
 	
 	# root
-	field_frame.grid(row=0, column=0)
+	field_frame.grid(row=0, column=0, padx=5, pady=5)
 	footer_frame.grid(row=1, column=0)
 	record_frame.grid(row=0, column=1, sticky=N)
 	root.mainloop()
