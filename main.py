@@ -20,7 +20,6 @@ bg_color = ["light cyan",
 ]
 
 class Game_Record():
-	#
 	def __init__(self):
 		os.chdir(os.path.dirname(os.path.abspath(__file__)))
 		self.path = os.path.join(os.getcwd(), "game_record.dat")
@@ -29,6 +28,10 @@ class Game_Record():
 		if os.path.isfile(self.path): #ファイルが存在するときファイル読み込み
 			with open(self.path, 'rb') as f:
 				self.data = pickle.load(f)
+
+	def get_max_record(self):
+		max_score, max_tile = np.max(self.data, axis=0)
+		return maxscore, maxtile
 
 	def get_play_count(self):
 		return len(self.data)
@@ -68,8 +71,8 @@ def btn_action(env, label_list, i, dat_file):
 	if not game_over_check(label_list): 
 		_, _, done, _ = env.step(i)
 		update_label(env, label_list, done, dat_file)
-	if dat_file.write_check(done):
-		dat_file.write_record(env)
+		if dat_file.write_check(done):
+			dat_file.write_record(env)
 
 def btn_reset(env, label_list ,dat_file):
 	if game_over_check(label_list): 
