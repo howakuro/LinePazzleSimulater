@@ -1,9 +1,19 @@
 import pickle
 import os
 import numpy as np
+import sys
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-path = os.path.join(os.getcwd(), "game_record.dat")
+args = sys.argv
+path = None
+if len(args) == 1:#
+	os.chdir(os.path.dirname(os.path.abspath(__file__)))
+	path = os.path.join(os.getcwd(), "game_record.dat")
+elif len(args) == 2:
+	path = args[1]
+else: 
+	print("Error:Invalid command line argument.")
+	sys.exit(1)
+
 if os.path.isfile(path): #ファイルが存在するときファイル読み込み
 	with open(path, 'rb') as f:
 		data = pickle.load(f)
@@ -18,4 +28,4 @@ if os.path.isfile(path): #ファイルが存在するときファイル読み込
 	for i in data:
 		print(i)
 else:
-	print(path + " is not found.")
+	print("Error:" + path + " is not found.")
