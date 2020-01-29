@@ -88,8 +88,8 @@ if __name__ == '__main__':
 	# tkinter 設定
 	root = Tk()
 	root.title("Touhou Line Puzzle Simulator")
-	root.geometry("360x510")
-	root.minsize(360, 510)
+	root.geometry("480x450")
+	root.minsize(480, 450)
 	
 	tilefont  = font.Font(size=30)
 	btnfont   = font.Font(size=15)
@@ -104,6 +104,10 @@ if __name__ == '__main__':
 	)
 
 	record_frame = ttk.Frame(
+		root
+	)
+
+	footer_frame = ttk.Frame(
 		root
 	)
 
@@ -142,7 +146,7 @@ if __name__ == '__main__':
 	label_list.append(lab)
 
 	# GAMEOVER用ラベル記述
-	gameover_lab = Label(root, text="", font=scorefont)
+	gameover_lab = Label(footer_frame, text="", font=scorefont)
 	label_list.append(gameover_lab)
 
 	# プレイ回数用ラベル記述
@@ -155,7 +159,7 @@ if __name__ == '__main__':
 	
 	# リセットボタン記述
 	cmd = partial(btn_reset, env, label_list, dat_file)
-	reset_btn = Button(root, text="リセット", command=cmd, font=btnfont)
+	reset_btn = Button(footer_frame, text="リセット", command=cmd, font=btnfont)
 	
 	# 選択ボタン記述
 	for i in range(5):
@@ -163,10 +167,16 @@ if __name__ == '__main__':
 		btn = Button(field_frame, text="選択", command=cmd, font=btnfont)
 		btn.grid(row=env.height+3, column=i, sticky=W+E)
 	
-	score_frame.pack(side="left", padx=20)
-	play_count_frame.pack(side="right", padx=20)
-	record_frame.pack()
-	field_frame.pack()
+	# record_frame
+	score_frame.pack()
+	play_count_frame.pack()
+	
+	# footer_frame
 	gameover_lab.pack()
 	reset_btn.pack()
+	
+	# root
+	field_frame.grid(row=0, column=0)
+	footer_frame.grid(row=1, column=0)
+	record_frame.grid(row=0, column=1, sticky=N)
 	root.mainloop()
