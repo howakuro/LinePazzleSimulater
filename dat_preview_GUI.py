@@ -62,7 +62,8 @@ class DataImport():
 					data_dict["PLAY_NUM"]      = len(data)
 					self.data_list.append(data_dict)
 		
-		self.min_num = min([i["PLAY_NUM"] for i in self.data_list])
+		if self.data_list:
+			self.min_num = min([i["PLAY_NUM"] for i in self.data_list])
 		
 		for i in self.data_list:
 			data_min = i["DATA"][:self.min_num]
