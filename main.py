@@ -20,6 +20,7 @@ bg_color = ["light cyan",
 ]
 
 class Game_Record():
+	#
 	def __init__(self):
 		os.chdir(os.path.dirname(os.path.abspath(__file__)))
 		self.path = os.path.join(os.getcwd(), "game_record.dat")
@@ -64,8 +65,9 @@ def update_label(env, label_list, done, dat_file):
 	label_list[field.size+3]['text'] = str(dat_file.get_play_count())
 
 def btn_action(env, label_list, i, dat_file):
-	_, _, done, _ = env.step(i)
-	update_label(env, label_list, done, dat_file)
+	if not game_over_check(label_list): 
+		_, _, done, _ = env.step(i)
+		update_label(env, label_list, done, dat_file)
 	if dat_file.write_check(done):
 		dat_file.write_record(env)
 
