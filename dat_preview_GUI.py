@@ -74,6 +74,13 @@ class DataImport():
 			i["BACK_AVERAGE_SCORE"] = float(Decimal(str(a_score)).quantize(Decimal(self.print_round), rounding=ROUND_HALF_UP))
 			i["BACK_AVERAGE_TILE"]  = float(Decimal(str(a_tile)).quantize(Decimal(self.print_round), rounding=ROUND_HALF_UP))
 	
+	def search(self, ID):
+		#IDで検索を掛ける関数
+		for data_dict in self.data_list:
+			if data_dict["ID"] == str(ID):
+				return data_dict
+		return None
+	
 	def research_data(self):
 		self.min_flag = not(self.min_flag)
 		for i in self.data_list:
@@ -111,16 +118,10 @@ def update_tree(tree, dat_db):
 	for i in range(len(dat_db.data_list)):
 		tree.insert("", "end", values=[dat_db.data_list[i][j] for j in dat_db.header_list])
 
-if __name__ == '__main__':
-	# tkinter 設定
-	root = Tk()
-	root.title("dat preview GUI")
-	root.geometry("640x480")
-	root.minsize(640, 480)
-	
+def Abstract_Data_View(root, dat_db):
 	# treeview作成
-	tree   = ttk.Treeview(root)
-	dat_db = DataImport()
+	frame  = ttk.Frame(root)
+	tree   = ttk.Treeview(frame)
 	
 	data_index     = tuple(range(1, len(dat_db.header_list)+1))
 	tree["column"] = data_index
@@ -135,14 +136,72 @@ if __name__ == '__main__':
 		tree.insert("", "end", values=[dat_db.data_list[i][j] for j in dat_db.header_list])
 	
 	# csv生成ボタン作成
-	csv_btn = Button(root, text="CSV出力", command=dat_db.export_csv)
+	csv_btn = Button(frame, text="CSV出力", command=dat_db.export_csv)
 	
 	# 最小回数一致ボタン作成
 	cmd = partial(min_btn_action, dat_db, tree)
-	min_btn = Button(root, text="最小回数変換", command=cmd)
+	min_btn = Button(frame, text="最小回数変換", command=cmd)
 	
-	#設置
 	csv_btn.pack()
 	min_btn.pack()
 	tree.pack(fill=BOTH, expand=1)
+	return frame, tree
+
+def Detail_Data_View(root, dat_db, back_func):
+	# treeview作成
+	frame  = ttk.Frame(root)
+	tree   = ttk.Treeview(frame)
+	
+	header_list    = ["Number", "Score", "Tile"]
+	data_index     = (1,2,3)
+	tree["column"] = data_index
+	tree["show"]   = "headings"
+	
+	for i in data_index:
+		tree.heading(i, text=header_list[i-1])
+		tree.column(i, width=100, anchor=CENTER)
+	
+	# 戻るボタン作成
+	back_btn = Button(frame, text="戻る", command=back_func)
+	
+	back_btn.pack()
+	tree.pack(fill=BOTH, expand=1)
+	return frame, tree
+
+def tree_selection_event(event, dat_db=None, abs_tree=None, det_tree=None, det_frame=None):
+	det_tree.delete(*det_tree.get_children())
+	data = dat_db.search(abs_tree.set(abs_tree.selection()[0])["1"])
+	for i, (score, tile) in enumerate(data["DATA"]):
+			det_tree.insert("", "end", values=(str(i+1), str(score), str(tile)))
+	
+	det_frame.tkraise()
+
+def back_btn_action(abs_frame):
+	abs_frame.tkraise()
+
+if __name__ == '__main__':
+	# tkinter 設定
+	root = Tk()
+	root.title("dat preview GUI")
+	root.geometry("640x480")
+	root.minsize(640, 480)
+	root.grid_rowconfigure(0, weight=1)
+	root.grid_columnconfigure(0, weight=1)
+	
+	# データ取得
+	dat_db = DataImport()
+	
+	# frame作成
+	abs_frame, abs_tree = Abstract_Data_View(root, dat_db)
+	det_frame, det_tree = Detail_Data_View(root, dat_db, partial(back_btn_action, abs_frame))
+	
+	# イベント設定
+	cmd = partial(tree_selection_event, dat_db=dat_db, abs_tree=abs_tree, det_tree=det_tree, det_frame=det_frame)
+	abs_tree.bind('<<TreeviewSelect>>', cmd)
+	
+	# 配置設定
+	abs_frame.grid(row=0, column=0, sticky="nsew")
+	det_frame.grid(row=0, column=0, sticky="nsew")
+	abs_frame.tkraise()
+	
 	root.mainloop()
