@@ -172,8 +172,8 @@ def tree_selection_event(event, dat_db=None, abs_tree=None, det_tree=None, det_f
 	det_tree.delete(*det_tree.get_children())
 	data = dat_db.search(abs_tree.set(abs_tree.selection()[0])["1"])
 	for i, (score, tile) in enumerate(data["DATA"]):
-			det_tree.insert("", "end", values=(str(i+1), str(score), str(tile)))
-	
+			det_tree.insert("", "end", values=(str(i+1), str(score), str(tile)), tags=("Min" if i < dat_db.min_num else ""))
+	det_tree.tag_configure("Min", background="cyan")
 	det_frame.tkraise()
 
 def back_btn_action(abs_frame):
