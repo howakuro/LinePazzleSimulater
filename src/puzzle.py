@@ -158,8 +158,14 @@ class Touhou_Line_Pazzle(gym.Env):
             moved = self._get_tile(action)
         else:
             moved = True
-            tile_over_flow_push = self._next_tile_push() 
-            tile_over_flow_shoot,score = self._shoot(action)
+            if self.next_tile_colomn != action:
+                tile_over_flow_push = self._next_tile_push()
+                tile_over_flow_shoot, score = self._shoot(self.board[:, action])
+            else:
+                board_column = np.concatenate([[self.next_tile], self.board[:, action]])
+                tile_over_flow_shoot, score = self._shoot(board_column)
+                self.board[:, action] = board_column[:self.height]
+                tile_over_flow_push = board_column[-1] != 0
             done = tile_over_flow_shoot or tile_over_flow_push 
             self.before_shoot_colomn = action
             self.now_max_num = np.max(self.board)
@@ -261,26 +267,27 @@ class Touhou_Line_Pazzle(gym.Env):
         tile_over_flow : bool
             タイルが列から溢れているか否か
         """
+        colomn_length = len(shoot_colomn)
         shoot_tile = self.have_tile
         start_shoot_tile = shoot_tile
         tile_over_flow = False
         self.have_tile = None
-        for y in range(5)[::-1]:
-            if self.board[y][shoot_colomn] == 0:#空白マス
+        for y in range(colomn_length)[::-1]:
+            if shoot_colomn[y] == 0:#空白マス
                 if y == 0:#一番上の行までタイルがなかった場合
-                    self.board[y][shoot_colomn] =  shoot_tile
+                    shoot_colomn[y] =  shoot_tile
                 continue
-            if self.board[y][shoot_colomn] != shoot_tile:#隣接するタイルが違う数字を持つ場合
-                if y + 1 < 5:#タイルが溢れていない場合
-                    self.board[y + 1][shoot_colomn] = shoot_tile
+            if shoot_colomn[y] != shoot_tile:#隣接するタイルが違う数字を持つ場合
+                if y + 1 < colomn_length:#タイルが溢れていない場合
+                    shoot_colomn[y + 1] = shoot_tile
                 else:#タイルが溢れている場合
                     tile_over_flow = True
                 return tile_over_flow, self._score(start_shoot_tile, shoot_tile)
-            elif self.board[y][shoot_colomn] == shoot_tile:#隣接するタイルが同じ数字を持つ場合
-                self.board[y][shoot_colomn] += 1
-                shoot_tile = self.board[y][shoot_colomn]
-                if y + 1 < 5:#下から２番目の列までの処理
-                    self.board[y + 1][shoot_colomn] =  0
+            elif shoot_colomn[y] == shoot_tile:#隣接するタイルが同じ数字を持つ場合
+                shoot_colomn[y] += 1
+                shoot_tile = shoot_colomn[y]
+                if y + 1 < colomn_length:#下から２番目の列までの処理
+                    shoot_colomn[y + 1] =  0
         return tile_over_flow, self._score(start_shoot_tile, shoot_tile)
 
 
