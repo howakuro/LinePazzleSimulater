@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # tkinter 設定
     root = Tk()
     root.title("Touhou Line Puzzle Simulator")
-    root.geometry("480x470")
+    root.geometry("480x480")
     root.minsize(480, 480)
     root.maxsize(480, 480)
     root.grid_rowconfigure(0, weight=1)
