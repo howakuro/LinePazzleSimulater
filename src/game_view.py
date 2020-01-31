@@ -75,7 +75,7 @@ class Game_View():
 
         # プレイ回数用ラベル記述
         play_count = dat_file.get_play_count()
-        lab = Label(play_count_frame, text="PLAYCOUNT", font=self.scorefont)
+        lab = Label(play_count_frame, text="PLAY COUNT", font=self.scorefont)
         lab.pack(side="top")
         lab = Label(play_count_frame, text=str(play_count), font=self.scorefont)
         lab.pack(side="top")

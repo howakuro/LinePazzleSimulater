@@ -8,18 +8,16 @@ class Record_View():
       # datファイル保持
       self.dat_file = dat_file
       # treeview作成
-      self.frame  = ttk.Frame(root)
+      self.frame = ttk.Frame(root)
       self.tree = ttk.Treeview(self.frame)
-      self.header_list    = ["Number", "Score", "Tile"]
+      self.header_list = ["Play Count", "Score", "Tile"]
       
-      data_index     = (1,2,3)
+      data_index = (1, 2, 3)
       self.tree["column"] = data_index
       self.tree["show"]   = "headings"
-      
       for i in data_index:
         self.tree.heading(i, text=self.header_list[i-1])
         self.tree.column(i, width=100, anchor=CENTER)
-      
       self.update_tree()
       
       # 戻るボタン作成
